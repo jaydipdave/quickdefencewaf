@@ -89,7 +89,7 @@ init_by_lua 'waf = require "waf"; waf.load_rules()';
 		
 ## Motive
 	
-* An easy to configure and use Web Application Firewall, available to all kind of public and secure websites from common attacks.
+* An easy to use Web Application Firewall, available to all kind of business and secure websites from all major attacks.
 	
 ## Got a Question?
 	
