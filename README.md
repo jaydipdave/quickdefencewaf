@@ -38,6 +38,8 @@ Tons of things are yet to be developed.
 
 ```
 RULE: ALLOWED_METHODS "GET, POST"
+RULE: BLOCK_ACTION "SLEEP=50;HTTP_CODE=301;REDIRECT=http://images.sodahead.com/polls/002874377/348775559_5034317796_blocked_xlarge_xlarge.jpeg"
+
 RULE: LOAD_PATTERNS "SQL_PATTERNS=/WAF/Rules/sql_patterns.txt"
 RULE: LOAD_PATTERNS "XSS_PATTERNS=/WAF/Rules/xss_patterns.txt"
 
