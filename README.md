@@ -20,6 +20,7 @@
 * Block a triggered rule request for certain seconds and then redirect the attacker to some other page. This will block any scanner scanning your website.
 * Score based rule action. If sum of scores for all the matches become >= 100. The request is blocked.
 Tons of things are yet to be developed.
+* SSL offloading in load balancing environment
 
 ## YET TODO
 
@@ -33,6 +34,8 @@ Tons of things are yet to be developed.
 * Tokenizer : CSRF Protection
 * Profiling Mode: Whitelisting approach instead of Blacklisting
 * SAMPLE RULES
+* DoS/DDoS detection and ~protection
+* Website Access control
 	
 ## SAMPLE RULES
 
