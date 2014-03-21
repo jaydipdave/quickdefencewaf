@@ -1,58 +1,42 @@
-# QuickDefence - Web Application Firewall [README]
+# QuickDefence - Web Application Firewall
 
 ## What is QuickDefence - WAF?
 
-* It is an easy to setup Web Application Firewall without doing major changes in your server architecture
-* You just need to setup a Reverse Proxy within your server or between your server and the internet
-* Nginx is full featured reverse proxy freely available on the internet. Nginx can solve load balancing problem, website performance related issue, old server vulnerability related issues etc
-* It has very easy to understand rule writing, very good for quick virtual web application vulnerability patching
-* It can easily be deployed in to a hardware or a virtual appliance
+* It is a reverse proxy (nginx) based web application firewall.
+* Nginx is full featured reverse proxy available on the internet, it is free. Nginx can solve load balancing problem, improve website performance drastically and cover up your web server vulnerabilities.
+* Programmable rule writing in pure Lua.
 
-## Why QuickDefence ? [Features]
+## Features
 
-* mod_security is a very good WAF, it is very hard for any open source WAF to even reach at that level. The only issue with mod_security is, it is very complex in configuration writing rules. Even for programmers it is hard to understand sometimes. The scoring system of mod_security is also difficult to understand. No body is going to entirely utilize mod_security and its features.
-* QuickDefence is actually targeted for instant basic protection from critical threats. For now, at least someone can easily set it up for the first level of defence.
+* Programmable Rule Writing in Lua, to have more control on logical vulnerabilities as well. Lua is a very fast scripting language, so it wont affect the performance of the website
+* Easy to deploy and easy to manage
 * QuickDefence is based on Nginx, so it will boost the website performance drastically.
-* Nginx can easily provide efficient load balancing
-* Lua is a very fast scripting language, so it wont affect the performance of the website.
-* Honeypots can also be configured to misguide attackers.
-* Very good response data and response header filtration. (can be used for Error suppression)
-* Block a triggered rule request for certain seconds and then redirect the attacker to some other page. This will block any scanner scanning your website.
-* Score based rule action. If sum of scores for all the matches become >= 100. The request is blocked.
-Tons of things are yet to be developed.
-* SSL offloading in load balancing environment
+* Nginx can be used for efficient load balancing
+* Easy response content and response header filtration. (For extended security and Data Leak Prevention (DLP))
+* Block malicious users/bots for a certain period of time
+* A Basic version of Profiling (Whitelisting approach) 
 
 ## YET TODO
 
-* RULE WRITING: I didn't get time to write rules, you might want to come up with generic rules
-* EXPANSION OF VULNERABILITY COVERAGE
-* REGRESSION TESTING AND STRESS TESTING
+* RULE WRITING: Lots and lots of generic rules
 * WEB-UI TO MANAGE NGINX AND RULES REMOTELY
-* RULE WRITING CAPABILITY FOR FILE UPLOADS
 * Build Virtual Appliance
 * ANALYTICS: A BASIC VERSION OF GOOGLE ANALYTICS.
 * Tokenizer : CSRF Protection
-* Profiling Mode: Whitelisting approach instead of Blacklisting
-* SAMPLE RULES
+* Extended Profiling Mode: Whitelisting approach instead of Blacklisting
 * DoS/DDoS detection and ~protection
 * Website Access control
 	
 ## SAMPLE RULES
 
 ```
-RULE: ALLOWED_METHODS "GET, POST"
-RULE: BLOCK_ACTION "SLEEP=50;HTTP_CODE=301;REDIRECT=http://images.sodahead.com/polls/002874377/348775559_5034317796_blocked_xlarge_xlarge.jpeg"
+	xss = "((<.*>)|(prompt\\()|(alert\\()|(confirm\\()|(eval\\()|(window.)|(document\.)(fscommand)|(javascript:)|(onabort)|(onactivate)|(onafterprint)|(onafterupdate)|(onbeforeactivate)|(onbeforecopy)|(onbeforecut)|(onbeforedeactivate)|(onbeforeeditfocus)|(onbeforepaste)|(onbeforeprint)|(onbeforeunload)|(onbegin)|(onblur)|(onbounce)|(oncanplay)|(oncanplaythrough)|(oncellchange)|(onchange)|(onclick)|(oncontextmenu)|(oncontrolselect)|(oncopy)|(oncut)|(ondataavailable)|(ondatasetchanged)|(ondatasetcomplete)|(ondblclick)|(ondeactivate)|(ondragdrop)|(ondragend)|(ondragenter)|(ondragleave)|(ondragover)|(ondrag)|(ondragstart)|(ondrop)|(ondurationchange)|(onemptied)|(onended)|(onend)|(onerror)|(onerrorupdate)|(onfilterchange)|(onfinish)|(onfocusin)|(onfocusout)|(onfocus)|(onformchange)|(onforminput)|(onhashchange)|(onhelp)|(oninput)|(oninvalid)|(onkeydown)|(onkeypress)|(onkeyup)|(onlayoutcomplete)|(onloadeddata)|(onloadedmetadata)|(onload)|(onloadstart)|(onlosecapture)|(onmediacomplete)|(onmediaerror)|(onmessage)|(onmousedown)|(onmouseenter)|(onmouseleave)|(onmousemove)|(onmouseout)|(onmouseover)|(onmouseup)|(onmousewheel)|(onmoveend)|(onmove)|(onmovestart)|(onoffline)|(ononline)|(onoutofsync)|(onpagehide)|(onpageshow)|(onpaste)|(onpause)|(onplaying)|(onplay)|(onpopstate)|(onprogress)|(onpropertychange)|(onratechange)|(onreadystatechange)|(onredo)|(onrepeat)|(onreset)|(onresizeend)|(onresize)|(onresizestart)|(onresume)|(onreverse)|(onrowdelete)|(onrowexit)|(onrowinserted)|(onrowsenter)|(onscroll)|(onseeked)|(onseeking)|(onseek)|(onselectionchange)|(onselect)|(onselectstart)|(onshow)|(onstalled)|(onstart)|(onstop)|(onstorage)|(onsubmit)|(onsuspend)|(onsyncrestored)|(ontimeerror)|(ontimeupdate)|(ontrackchange)|(onundo)|(onunload)|(onurlflip)|(onvolumechange)|(onwaiting)|(seeksegmenttime)"
 
-RULE: LOAD_PATTERNS "SQL_PATTERNS=/WAF/Rules/sql_patterns.txt"
-RULE: LOAD_PATTERNS "XSS_PATTERNS=/WAF/Rules/xss_patterns.txt"
+	-- sample comment in between
 
-RULE: SQL_INJECTION "/"
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES<!__utm>
-	PATTERN: "<SQL_PATTERNS>"
-		SCORE: 50
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES,HEADER_NAMES,QUERY_FIELDS,POST_FIELDS,POST_BODY,COOKIE_NAMES,METHOD
-	PATTERN: "select.*from"
-		SCORE: 50	
+	if match("*", xss ,REGEX) or match("URI,QUERY_FIELDS,HEADER_VALUES", xss ,REGEX) then
+		block("Blocked due to XSS problem")
+	end
 ```
 
 ## INSTALLATION
@@ -67,26 +51,26 @@ or
 I would suggest to install [openresty](http://openresty.org/) package, which includes Nginx and Lua.
 
 ### Nginx Configuration
-* Copy waf.lua file into lualib folder (for me it is: /usr/local/openresty/lualib/waf.lua)
+* Copy Conf/quickdefence.lua file into lualib folder (for me it is: /usr/local/openresty/lualib/quickdefence.lua)
 * Edit /usr/local/openresty/nginx/conf/nginx.conf file to configure your web server
 * Change the configuration as per below (This is a part of the file which needs to be changed)
 
 ```
-init_by_lua 'waf = require "waf"; waf.load_rules()';
-	server {
-		listen       80;
-		server_name  localhost;
+init_by_lua 'waf = require "quickdefence"; waf.load_rules()';
+server {
+listen       80;
+server_name  localhost;
 
-		default_type 'text/html';
+default_type 'text/html';
 
-		location / {
-			#content_by_lua 'ngx.say(rules)';
+location / {
+	#content_by_lua 'ngx.say(rules)';
 
-			access_by_lua 'waf.fetch_request();waf.get_cookies();waf.protect()';
-			proxy_pass http://localhost:8080;
-			header_filter_by_lua_file '/usr/local/openresty/nginx/conf/header_filter.lua';
-			body_filter_by_lua_file '/usr/local/openresty/nginx/conf/body_filter.lua';
-		}
+	access_by_lua 'waf.fetch_request();waf.get_cookies();waf.protect()';
+	proxy_pass http://localhost:8080;
+	header_filter_by_lua_file '/usr/local/openresty/nginx/conf/header_filter.lua';
+	body_filter_by_lua_file '/usr/local/openresty/nginx/conf/body_filter.lua';
+}
 ```
 * As shown in above code, you need to configure paths for the header_filer.lua and body_filter.lua file. This is basically used for filtering webserver responses.
 * Change the proxy_pass parameter to your own website to make it working. You can also redirect it to public facing website to test the waf. (like http://demo.testfire.net, http://webscantest.com, http://crackme.cenzic.com)
@@ -94,13 +78,8 @@ init_by_lua 'waf = require "waf"; waf.load_rules()';
 		
 ## Motive
 	
-* An easy to use Web Application Firewall, available to all kind of business and secure websites from all major attacks.
+* An easy to setup, programmable WAF.
 	
 ## Got a Question?
 	
 * jaydipdave@gmail.com
-	
-		
-
-
-
