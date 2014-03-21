@@ -1,45 +1,187 @@
 
 RULE: DENY_IP "FALSE"
-RULE: TRIGGER_ACTION "LOG"
-RULE: BLOCK_ACTION "SLEEP=50;HTTP_CODE=301;REDIRECT=http://images.sodahead.com/polls/002874377/348775559_5034317796_blocked_xlarge_xlarge.jpeg"
+RULE: TRIGGER_ACTION "BLOCK"
+RULE: BLOCK_ACTION "HTTP_CODE=401"
 #RULE: USER_DENY_SCORE 500
 
 
 RULE: ALLOWED_METHODS "GET, POST"
-RULE: LOAD_PATTERNS "SQL_PATTERNS=/mnt/hgfs/myscanner/Extras/WAF/Rules/sql_patterns.txt"
-RULE: LOAD_PATTERNS "XSS_PATTERNS=/mnt/hgfs/myscanner/Extras/WAF/Rules/xss_patterns.txt"
 
-#RULE: LOAD_FILTERS "SQL_FILTERS=/mnt/hgfs/myscanner/Extras/WAF/Rules/sql_filters.txt"
-#RULE: LOAD_FILTERS "ERROR_FILTERS=/mnt/hgfs/myscanner/Extras/WAF/Rules/error_filters.txt"
-
-RULE: FILTER "<SQL_FILTERS>"
-
-RULE: SQL_INJECTION "/"
-	TRIGGER_ACTION: "BLOCK"
-	DENY_IP: "TRUE"
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES<!__utm>
-	PATTERN: "<SQL_PATTERNS>"
+RULE: PROFILE_GEN_544062fde661f13a21b088b998a0899c "/survey_questions.aspx"
+	MATCHES: POST_DATA<step>,QUERY_STRING<step>
+	PATTERN: "[^a-zA-Z]+"
 		SCORE: 100
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES,HEADER_NAMES,QUERY_FIELDS,POST_FIELDS,POST_BODY,COOKIE_NAMES,METHOD
-	PATTERN: "select.*from"
-		SCORE: 500
 
-RULE: CONTENT_LENGTH "/"
-	TRIGGER_ACTION: "BLOCK"
-	MATCHES: HEADERS<User-Agent>
-	PATTERN: "<NULL>"
-		SCORE: 50
-	MATCHES: METHOD
-	PATTERN: "post"
-		SCORE: 50
+
+RULE: PROFILE_GEN_98bf2696d897a58b833db22b15870a48 "/subscribe.aspx"
+	MATCHES: POST_DATA<btnSubmit>,QUERY_STRING<btnSubmit>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_49fa55fd2b02a8b9afa8dfa6dcfa4c4c "/bank/ws.asmx"
+	MATCHES: POST_DATA<disco>,QUERY_STRING<disco>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_f0df23f38cf82f38f3814d8f9ab45619 "/servererror.aspx"
+	MATCHES: POST_DATA<aspxerrorpath>,QUERY_STRING<aspxerrorpath>
+	PATTERN: "[^a-zA-Z\/\.]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_6e508cbe01a405f62c63793e43aa03cd "/bank/ws.asmx"
+	MATCHES: POST_DATA<op>,QUERY_STRING<op>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_adea525eae84ddabb0b782598308a016 "/comment.aspx"
+	MATCHES: POST_DATA<comments>,QUERY_STRING<comments>
+	PATTERN: "[^0-9]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_f5d425180a437531c7c6ad3dda7eccdb "/search.aspx"
+	MATCHES: POST_DATA<txtSearch>,QUERY_STRING<txtSearch>
+	PATTERN: "[^0-9]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_7f4c5ae1052af045a0e6e5b8388835af "/comment.aspx"
+	MATCHES: POST_DATA<name>,QUERY_STRING<name>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_ae8ea9621b61ffed5173f2e45e6deae9 "/comment.aspx"
+	MATCHES: POST_DATA<subject>,QUERY_STRING<subject>
+	PATTERN: "[^0-9]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_d3a5527323a972079ccb4485fa176f4e "/bank/customize.aspx"
+	MATCHES: POST_DATA<lang>,QUERY_STRING<lang>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_052c83862d95991fd66ac42ca6160342 "/bank/login.aspx"
+	MATCHES: POST_DATA<btnSubmit>,QUERY_STRING<btnSubmit>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_3ffef768d7964f3c0981cfbc42760ae3 "/bank/login.aspx"
+	MATCHES: POST_DATA<passw>,QUERY_STRING<passw>
+	PATTERN: "[^a-zA-Z0-9\$]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_c9def1ed6fa1e68792f041d5162e34eb "/subscribe.aspx"
+	MATCHES: POST_DATA<txtEmail>,QUERY_STRING<txtEmail>
+	PATTERN: "[^a-zA-Z\@\.]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_3da87c95cd9891b6e2f0f6008f8c548a "/bank/queryxpath.aspx"
+	MATCHES: POST_DATA<_ctl0:_ctl0:Content:Main:TextBox1>,QUERY_STRING<_ctl0:_ctl0:Content:Main:TextBox1>
+	PATTERN: "[^a-zA-Z\ \(\.\)]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_2c83c6b8a49cb52a0843bb3babc33e33 "/bank/queryxpath.aspx"
+	MATCHES: POST_DATA<__EVENTVALIDATION>,QUERY_STRING<__EVENTVALIDATION>
+	PATTERN: "[^a-zA-Z0-9\/\+\=]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_70a3d542ef6443b9bf6c5e3bad3d30bb "/bank/login.aspx"
+	MATCHES: POST_DATA<uid>,QUERY_STRING<uid>
+	PATTERN: "[^0-9]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_fe0123a0d15dd8df852bdbb735df42fb "/comment.aspx"
+	MATCHES: POST_DATA<cfile>,QUERY_STRING<cfile>
+	PATTERN: "[^a-zA-Z\.]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_c7701012102c29d6c0791f4225c0d185 "/comment.aspx"
+	MATCHES: POST_DATA<submit>,QUERY_STRING<submit>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_64c7590547ce4f3772e746ff5a69ffce "/bank/queryxpath.aspx"
+	MATCHES: POST_DATA<__VIEWSTATE>,QUERY_STRING<__VIEWSTATE>
+	PATTERN: "[^a-zA-Z\/]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_4c5867fd497fc0900aee4d4353c2e4dd "/bank/queryxpath.aspx"
+	MATCHES: POST_DATA<_ctl0:_ctl0:Content:Main:Button1>,QUERY_STRING<_ctl0:_ctl0:Content:Main:Button1>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_56d893fa496251f8462fda196460c3a7 "/bank/ws.asmx"
+	MATCHES: POST_DATA<WSDL>,QUERY_STRING<WSDL>
+	PATTERN: "[^a-zA-Z]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_91da2fa3a2effeda9a717f5bf62e9f59 "/bank/customize.aspx"
+	MATCHES: POST_DATA<__VIEWSTATE>,QUERY_STRING<__VIEWSTATE>
+	PATTERN: "[^a-zA-Z0-9\/\=]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_2bfa23666c1a835f142893aabd1220ce "/disclaimer.htm"
+	MATCHES: POST_DATA<url>,QUERY_STRING<url>
+	PATTERN: "[^a-zA-Z\:\/\.]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_bd570831412cad07d6a0e235d87b9b55 "/comment.aspx"
+	MATCHES: POST_DATA<email_addr>,QUERY_STRING<email_addr>
+	PATTERN: "[^a-zA-Z0-9\ ]+"
+		SCORE: 100
+
+
+RULE: PROFILE_GEN_a81ee7eac8900a0300e41c119774b41d "/default.aspx"
+	MATCHES: POST_DATA<content>,QUERY_STRING<content>
+	PATTERN: "[^a-zA-Z\.\_]+"
+		SCORE: 100
+
+
 		
-RULE: CROSS-SITE-SCRIPTING "/"
-	TRIGGER_ACTION: "BLOCK"
-	DENY_IP: "TRUE"
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES
-	PATTERN: ".*<script"
-		SCORE: 100
-	MATCHES: HEADERS,POST_DATA,QUERY_STRING,URI,COOKIES
-	PATTERN: "onclick"
-		SCORE: 100
+---------------------------------------
+
+inURI
+inHeaderName
+inHeaderValue
+inQueryField
+inQueryString
+inPostField
+inPostData
+inPostBody
+inCookieName
+inCookieValue
+
+
+patterns = load_patterns("/abc.txt")
+
+match("URI,HEADER_NAMES,HEADER_VALUES,QUERY_FIELDS,QUERY_STRING,POST_FIELDS,POST_DATA,POST_BODY,COOKIE_NAMES,COOKIE_VALUES,METHOD","<>", REGEX|PATTERN|STRING)
+
+
+if inURLp("/*") then
+	if match("REQUEST_HEADERS<User-Agent>,", "") then
+		log("Holly shit")
+		block("Holly Biss")
+		redirect("http://www.yahoo.com")
 		
+	end
+end

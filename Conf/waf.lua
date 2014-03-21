@@ -1,20 +1,20 @@
-
 local _M = {}
 local rules = {}
 
-local method 			= ""
+local method 		= ""
 local args			= ""
 local post_args		= ""
 local post_body		= ""
-local remote_ip 		= ""
+local remote_ip 	= ""
 local body 			= ""
-local start_time		= ""
+local start_time	= ""
 local http_version	= ""
-local headers			= ""
-local raw_header 		= ""
+local headers		= ""
+local raw_header 	= ""
 local file_name		= ""
 local body_data		= ""
-local cookies			= {}
+local cookies		= {}
+local uri			= ""
 local users			= {}
 
 function _M.vardump(value, depth, key)
@@ -117,8 +117,10 @@ function _M.load_rules()
 							rules[current_rule][trule][i[trule]]["value"] = parameter
 						else
 							if rules[current_rule][trule] == nil then
+								i[trule] = 0
 								rules[current_rule][trule] = {}
-								rules[current_rule][trule]["value"] = parameter
+								rules[current_rule][trule][i[trule]] = {}
+								rules[current_rule][trule][i[trule]]["value"] = parameter
 								sub_rule = trule
 							else
 								if  rules[current_rule][trule][0] ~= nil then
@@ -160,6 +162,7 @@ function _M.fetch_request()
 	raw_header 		= ngx.req.raw_header()
 	file_name		= ngx.req.get_body_file()
 	body_data		= ngx.req.get_body_data()
+	uri 			= ngx.var.uri
 	_M.get_cookies()
 end
 
@@ -378,6 +381,24 @@ function _M.safe_string(badstring)
 	return badstring:gsub("([%(%)%.%%%+%-%*%?%[%]%^%$])","%%%1")
 end
 
+function _M.profile_request()
+	local f = io.open("/mnt/hgfs/myscanner/Extras/WAF/Rules/profile_rules.txt", "a+"); 
+	
+	for k,v in pairs(args) do
+		--_M.profile_rule(k,v)
+		f:write("GET\t" .. method .. "\t" .. uri .. "\t" .. tostring(k) .. "\t" .. tostring(v) .. "\n")
+	end
+	for k,v in pairs(post_args) do
+		--_M.profile_rule(k,v)
+		f:write("POST\t" .. method .. "\t" .. uri .. "\t" .. tostring(k) .. "\t" .. tostring(v) .. "\n")
+	end
+	
+	for k,v in pairs(cookies) do
+		--_M.profile_rule(k,v)
+		f:write("COOKIE\t" .. method .. "\t" .. uri .. "\t" .. tostring(k) .. "\t" .. tostring(v) .. "\n")
+	end
+end
+
 function _M.protect()
 	if ngx.var.uri:find(".jpg") == nil and ngx.var.uri:find(".jpg") == nil and ngx.var.uri:find(".js") == nil  and ngx.var.uri:find(".css") == nil and ngx.var.uri:find(".gif") == nil and ngx.var.uri:find(".png") == nil and ngx.var.uri:find(".jpeg") == nil and ngx.var.uri:find(".gif") == nil  then
 		_M.user_hit(remote_ip)
@@ -391,7 +412,11 @@ function _M.protect()
 	local deny_ip = false
 	local block_action = ''
 	local block = false
+	
+	--_M.vardump(rules)
+	--ngx.exit(200)
 
+	--_M.profile_request()
 	if rules["ALLOWED_METHODS"]~=nil then
 		allowed_method = rules["ALLOWED_METHODS"]["value"]
 	end
@@ -421,27 +446,26 @@ function _M.protect()
 			if type(rule) == "table" then
 				for j,srule in pairs(rule) do 
 					if j=="ALLOWED_METHODS" then
-						rule_methods = srule["value"]
+						rule_methods = srule[0]["value"]
 						rule_methods = rule_methods:sub(2,rule_methods:len()-1)
 					end
 					if j=="DENY_IP" then
-						if srule["value"]:sub(2,srule["value"]:len()-1)=="TRUE" then
+						if srule[0]["value"]:sub(2,srule[0]["value"]:len()-1)=="TRUE" then
 							rule_deny_ip = true
 						else
 							rule_deny_ip = false
 						end
 					end
 					if j=="TRIGGER_ACTION" then
-						if srule['value']:sub(2,srule['value']:len()-1)=="BLOCK" then
+						if srule[0]['value']:sub(2,srule[0]['value']:len()-1)=="BLOCK" then
 							rule_block = true
 						end
 					end
 					if j=="BLOCK_ACTION" then
-						rule_block_action = srule['value']:sub(2,srule['value']:len()-1)
+						rule_block_action = srule[0]['value']:sub(2,srule[0]['value']:len()-1)
 					end
 					if j=="MATCHES" then
 						for k,match in pairs(srule) do
-							
 							local matches = match["value"]:gsub("%s","")..","
 							local pattern = rule["PATTERN"][k]["value"]
 							local match_score =  0
@@ -549,10 +573,11 @@ function _M.protect()
 		end
 		
 		if not string.match(string.upper(rule_methods:gsub("%s",""))..",","[,|:]"..method..",") then
-			_M.abort_request(rule_name, ngx.var.uri,score, rule_block,rule_deny_ip)
+			_M.abort_request(rule_name, ngx.var.uri,score, rule_block,rule_block_action,rule_deny_ip)
 		end
 	end
 end
+
 
 return _M
 ----------------------------------
