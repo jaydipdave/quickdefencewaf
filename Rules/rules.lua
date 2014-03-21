@@ -10,5 +10,5 @@ xss = "((<.*>)|(prompt\\()|(alert\\()|(confirm\\()|(eval\\()|(window.)|(document
 sqli = ""
 
 if match("*", xss ,REGEX) or match("URI,QUERY_FIELDS,HEADER_VALUES", xss ,REGEX) then
-	block("oops")
+	block("You are blocked for 10 seconds", 401, 1)
 end

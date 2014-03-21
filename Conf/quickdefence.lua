@@ -19,7 +19,7 @@ local REGEX			= 1
 local STRING		= 2
 local PATTERN		= 3
 local allpatterns 	= {}
-local rules			= loadfile("/mnt/hgfs/myscanner/Extras/WAF/Rules/rules.lua")
+local rules			= loadfile("/usr/local/openresty/nginx/conf/rules.lua")
 
 function _QD.vardump(value, depth, key)
   local linePrefix = ""
@@ -324,7 +324,7 @@ function match(fields, match, match_type)
 end
 
 function reload_rules()
-	rules = loadfile("/mnt/hgfs/myscanner/Extras/WAF/Rules/rules.lua")
+	rules = loadfile("/usr/local/openresty/nginx/conf/rules.lua")
 end
 
 function _QD.protect()
