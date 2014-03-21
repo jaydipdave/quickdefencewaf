@@ -245,7 +245,7 @@ function load_patterns(pattern_name, file)
 	else
 		return nil
 	end
-	allpatterns = 
+	--allpatterns = 
 	return patterns
 end
 

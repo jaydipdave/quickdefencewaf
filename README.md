@@ -56,7 +56,7 @@ I would suggest to install [openresty](http://openresty.org/) package, which inc
 * Change the configuration as per below (This is a part of the file which needs to be changed)
 
 ```
-init_by_lua 'waf = require "quickdefence"; waf.load_rules()';
+init_by_lua 'waf = require "quickdefence";';
 server {
 listen       80;
 server_name  localhost;
