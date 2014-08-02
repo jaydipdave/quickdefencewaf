@@ -12,6 +12,7 @@ local headers		= ""
 local raw_header 	= ""
 local file_name		= ""
 local body_data		= ""
+local last_match	= nil
 local cookies		= {}
 local uri			= ""
 local users			= {}
@@ -106,6 +107,7 @@ function _QD.check_regex_in_string(data,regex)
 	
 	for i_regex in string.gmatch(regex, "([^\r\n]+)") do
 		if _QD.trim(i_regex)~=nil and _QD.trim(i_regex)~="" and ngx.re.match(string.lower(data:gsub("%s","")),_QD.trim(i_regex)) ~= nil then
+			last_match = ngx.re.match(string.lower(data:gsub("%s","")),_QD.trim(i_regex))[0]
 			return true
 		end
 	end
@@ -219,7 +221,7 @@ function log(message)
 end
 
 function block(message, http_code,delay,block_url)
-	ngx.log(ngx.ALERT, "[QuickDefence]["..tostring(message).."][BLOCKED]")
+	ngx.log(ngx.ALERT, "[QuickDefence]["..tostring(message).."][BLOCKED]"..raw_header.."\n\n[MATCH: "..last_match.."]")
 	if delay then
 		ngx.sleep(delay)
 	end
