@@ -1,4 +1,5 @@
-
+------------- This is not in use. Please dont worry about this file ---------------
+------------- I am developing a new version of this, and will upload with proper usage documentation -----------
 local profile_rules = {}
 local md5 = require 'md5'
 
