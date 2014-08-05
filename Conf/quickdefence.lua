@@ -12,7 +12,7 @@ local headers		= ""
 local raw_header 	= ""
 local file_name		= ""
 local body_data		= ""
-local last_match	= nil
+local last_match	= "" 
 local cookies		= {}
 local uri			= ""
 local users			= {}
@@ -22,7 +22,7 @@ local PATTERN		= 3
 local allpatterns 	= {}
 local rules			= assert(loadfile("/usr/local/openresty/nginx/conf/rules.lua"))
 
-function _QD.vardump(value, depth, key)
+function vardump(value, depth, key)
   local linePrefix = ""
   local spaces = ""
   
@@ -46,7 +46,7 @@ function _QD.vardump(value, depth, key)
         value = mTable
     end		
     for tableKey, tableValue in pairs(value) do
-      _QD.vardump(tableValue, depth, tableKey)
+      vardump(tableValue, depth, tableKey)
     end
   elseif type(value)	== 'function' or 
       type(value)	== 'thread' or 
@@ -106,8 +106,8 @@ function _QD.check_regex_in_string(data,regex)
 	end
 	
 	for i_regex in string.gmatch(regex, "([^\r\n]+)") do
-		if _QD.trim(i_regex)~=nil and _QD.trim(i_regex)~="" and ngx.re.match(string.lower(data:gsub("%s","")),_QD.trim(i_regex)) ~= nil then
-			last_match = ngx.re.match(string.lower(data:gsub("%s","")),_QD.trim(i_regex))[0]
+		if i_regex~=nil and i_regex~="" and ngx.re.match(string.lower(data),i_regex) ~= nil then
+			last_match = ngx.re.match(string.lower(data),i_regex)[0]
 			return true
 		end
 	end
@@ -137,8 +137,14 @@ function _QD.check_regex_in_data(data,regex,fieldname,checkkeys)
 		fields[#fields+1]=field
 	end
 	for key, val in pairs(data) do
+		if type(val)~='string' then
+			val = ""
+		end
+		if key == nil then
+			key = ""
+		end
 		for k,field in pairs(fields) do
-			if field == nil or _QD.trim(field) == "" or (string.upper(field) == string.upper(key)) or (string.byte(field)==33 and string.upper(field:sub(2)) ~= string.upper(key) and _QD.in_table("!"..key,fields)==false) then
+			if field == nil or _QD.trim(field) == "" or (string.upper(_QD.trim(field)) == string.upper(_QD.trim(key))) or (string.byte(field)==33 and string.upper(field:sub(2)) ~= string.upper(key) and _QD.in_table("!"..key,fields)==false) then
 				if checkkeys == nil then
 					if _QD.check_regex_in_string(val,regex) then
 						return true
@@ -184,6 +190,7 @@ function _QD.extract_rule_field(fieldname)
 	fieldname = fieldname:gsub("HEADER_VALUES","")
 	fieldname = fieldname:gsub("QUERY_FIELDS","")
 	fieldname = fieldname:gsub("QUERY_STRING","")
+	fieldname = fieldname:gsub("PLAIN_URI_QUERY","")
 	fieldname = fieldname:gsub("POST_FIELDS","")
 	fieldname = fieldname:gsub("POST_DATA","")
 	fieldname = fieldname:gsub("COOKIE_NAMES","")
@@ -258,6 +265,12 @@ function match(fields, match, match_type)
 	for field,fieldname in pairs(match_criteria) do
 		if args ~= nil and (string.find(field,"QUERY_STRING")==1 or field=="*") then
 			if _QD.check_regex_in_data(args,match,fieldname) then
+				return {field,fieldname}
+			end
+		end
+		
+		if ngx.var.args ~= nil and (string.find(field,"PLAIN_URI_QUERY")==1 or field=="*") then
+			if _QD.check_regex_in_string(ngx.var.args,match) then
 				return {field,fieldname}
 			end
 		end
