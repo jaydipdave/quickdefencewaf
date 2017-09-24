@@ -1,4 +1,6 @@
-# QuickDefence - Web Application Firewall
+## Not being maintained currently - Please use at your own risk. Sample purpose only.
+
+# QuickDefence - Web Application Firewall 
 
 ## What is QuickDefence - WAF?
 
