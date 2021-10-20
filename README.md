@@ -1,4 +1,4 @@
-## Not being maintained currently -  Sample purpose only.
+## Not being maintained
 
 # QuickDefence - Web Application Firewall 
 
